@@ -19,6 +19,8 @@ riderModule.iml
 Data/*.db
 Data/*.sqlite
 hangfire/
+hangfire
+identifier.sqlite
 
 # Build results
 [Dd]ebug/
