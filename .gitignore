@@ -16,9 +16,8 @@ riderModule.iml
 *.sln.DotSettings.user
 
 # Database files
-*.db
-*.sqlite
-Data/
+Data/*.db
+Data/*.sqlite
 hangfire/
 
 # Build results
