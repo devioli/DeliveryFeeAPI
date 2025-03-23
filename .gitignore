@@ -1,0 +1,40 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+
+# macOS
+.DS_Store
+
+# IDE files
+.idea/
+.vscode/
+*.user
+*.suo
+*.userprefs
+*.sln.DotSettings.user
+
+# Database files
+*.db
+*.sqlite
+Data/
+hangfire/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
