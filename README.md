@@ -21,3 +21,10 @@ dotnet ef database update --project Infrastructure --startup-project App --conte
 
 dotnet run --project App
 ``` 
+
+## Accessing Hangfire Dashboard
+
+```bash
+# Find information about the background jobs
+http://localhost:5218/hangfire/recurring
+```

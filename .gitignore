@@ -39,3 +39,5 @@ bld/
 project.lock.json
 project.fragment.lock.json
 artifacts/
+Data/weather_data.db-wal
+Data/weather_data.db-shm
