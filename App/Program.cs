@@ -3,7 +3,6 @@ using Domain.Interfaces;
 using Domain.Services;
 using Infrastructure.Persistence;
 using App.Middleware;
-using App.Helpers;
 using Hangfire;
 using Hangfire.Storage.SQLite;
 using Infrastructure.BackgroundJobs;
@@ -31,7 +30,6 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddApiVersioning(options =>
     {
-        //options.DefaultApiVersion = new ApiVersion(builder.Configuration.GetSection("ApiVersion").Get<int>());
         options.DefaultApiVersion = new ApiVersion(1,0);
         options.AssumeDefaultVersionWhenUnspecified = false;
         options.ReportApiVersions = true;
@@ -79,7 +77,6 @@ using (var scope = app.Services.CreateScope())
     await initializer.InitializeAsync();
 }
 
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -102,6 +99,6 @@ app.UseExceptionHandler();
 app.Services.GetRequiredService<IRecurringJobManager>()
     .AddOrUpdate<WeatherJob>(
         "weather-job", 
-        x => x.FetchWeatherDataAsync(), 
+        x => x.GetWeatherDataAsync(), 
         app.Configuration["Hangfire:CronSchedule"] ?? "15 * * * *");
 app.Run();

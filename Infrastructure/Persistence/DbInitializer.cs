@@ -60,7 +60,7 @@ public class DbInitializer
             if (!await _context.Set<VehicleType>().AnyAsync())
             {
                 await SeedDataAsync();
-                await _weatherJob.FetchWeatherDataAsync();
+                await _weatherJob.GetWeatherDataAsync();
             }
             
         }

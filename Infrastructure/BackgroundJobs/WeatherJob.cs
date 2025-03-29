@@ -2,68 +2,57 @@ using System.Xml.Linq;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Models.Weather.Forecast;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.BackgroundJobs;
 
-public class WeatherJob (AppDbContext dbContext, IRepository repository)
+public class WeatherJob (AppDbContext dbContext, IRepository repository, IConfiguration configuration)
 {
-    public async Task FetchWeatherDataAsync()
+    public async Task GetWeatherDataAsync()
     {
-        await GetData();
+        var xml = await FetchXmlDataAsync();
+        await XmlToWeatherForecastMapperAsync(xml);
         await dbContext.SaveChangesAsync();
     }
-    
-    public async Task GetData()
-    {
-        // URL of the XML data
-        var url = "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php";
 
-        // Use HttpClient to fetch the XML data
+    private async Task<string> FetchXmlDataAsync()
+    {
+        var url = configuration["WEATHER_API_URL"] ?? throw new Exception("WEATHER_API_URL variable is not set.");
         using var client = new HttpClient();
         try
         {
-            // Download the XML as a string
-            var xmlData = await client.GetStringAsync(url);
-
-            // Parse the XML string into an XDocument
-            var doc = XDocument.Parse(xmlData);
-
-            // Get weather stations from repository
-            var stations = await repository.GetAllWeatherStationsAsync();
-
-            // Query the XML for stations matching the target names
-            var weatherForecasts = doc.Descendants("station")
-                .Where(s =>
-                {
-                    var nameElement = s.Element("name");
-                    return nameElement != null && stations.Select(x => x.Name).Contains(nameElement.Value.ToLower());
-                })
-                .Select(s =>
-                {
-                    var stationName = s.Element("name")?.Value?.ToLower() ?? "";
-                    var matchingStation = stations.First(x => x.Name.ToLower() == stationName);
-                    return new WeatherForecast
-                    {
-                        WeatherStationId = matchingStation.Id,
-                        AirTemperature = double.Parse(s.Element("airtemperature")?.Value ?? "0"),
-                        WindSpeed = double.Parse(s.Element("windspeed")?.Value ?? "0"),
-                        Phenomenon = s.Element("phenomenon")?.Value?.ToLower() ?? "",
-                        DateTime = UnixSecondsToDateTime(long.Parse(doc.Root?.Attribute("timestamp")?.Value ?? "0")),
-                    };
-                });
-
-            await dbContext.WeatherForecasts.AddRangeAsync(weatherForecasts);
-
+            return await client.GetStringAsync(url);
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            throw new Exception($"Failed to fetch weather data: {exception.Message}");
         }
     }
 
-    public DateTime UnixSecondsToDateTime(long timestamp, bool local = false)
+    private async Task XmlToWeatherForecastMapperAsync(string xml)
     {
-        var offset = DateTimeOffset.FromUnixTimeSeconds(timestamp);
-        return local ? offset.LocalDateTime : offset.UtcDateTime;
+        var doc = XDocument.Parse(xml);
+        var stations = await repository.GetAllWeatherStationsAsync();
+        var weatherForecasts = doc.Descendants("station")
+            .Where(s =>
+            {
+                var nameElement = s.Element("name");
+                return nameElement != null && stations.Select(x => x.Name).Contains(nameElement.Value.ToLower());
+            })
+            .Select(s =>
+            {
+                var stationName = s.Element("name")?.Value.ToLower() ?? "";
+                var matchingStation = stations.First(x => x.Name.Equals(stationName, StringComparison.CurrentCultureIgnoreCase));
+                    
+                return new WeatherForecast
+                {
+                    WeatherStationId = matchingStation.Id,
+                    AirTemperature = double.Parse(s.Element("airtemperature")?.Value ?? "0"),
+                    WindSpeed = double.Parse(s.Element("windspeed")?.Value ?? "0"),
+                    Phenomenon = s.Element("phenomenon")?.Value.ToLower() ?? "",
+                    DateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(doc.Root?.Attribute("timestamp")?.Value ?? "0")).DateTime
+                };
+            });
+        await dbContext.WeatherForecasts.AddRangeAsync(weatherForecasts);
     }
 }
