@@ -3,8 +3,8 @@ using Infrastructure.Persistence.Models.Fee;
 using Infrastructure.Persistence.Models.Weather.Station;
 using Infrastructure.Persistence.Models.Vehicle;
 using Infrastructure.Persistence.Models.Weather.Condition;
-using Infrastructure.Persistence.Models.Weather.Forecast;
 using Microsoft.EntityFrameworkCore;
+using static Domain.Constants.Constants;
 
 namespace Infrastructure.Persistence;
 
@@ -48,53 +48,45 @@ public class DbInitializer
 
     public async Task InitializeAsync()
     {
-        try
+        if (_context.Database.IsSqlite())
         {
-            if (_context.Database.IsSqlite())
-            {
-                // Ensure database is created
-                await _context.Database.EnsureCreatedAsync();
-            }
-
-            // Only seed if there are no vehicle types (as an indicator that the DB is empty)
-            if (!await _context.Set<VehicleType>().AnyAsync())
-            {
-                await SeedDataAsync();
-                await _weatherJob.GetWeatherDataAsync();
-            }
-            
+            // Ensure database is created
+            await _context.Database.EnsureCreatedAsync();
         }
-        catch
+
+        // Only seed if there are no vehicle types (as an indicator that the DB is empty)
+        if (!await _context.Set<VehicleType>().AnyAsync())
         {
-            throw;
+            await SeedDataAsync();
+            await _weatherJob.GetWeatherDataAsync();
         }
     }
 
     private async Task SeedDataAsync()
     {
         // Vehicle types
-        var car = new VehicleType { Id = Ids.Car, Name = "car" };
-        var scooter = new VehicleType { Id = Ids.Scooter, Name = "scooter" };
-        var bike = new VehicleType { Id = Ids.Bike, Name = "bike" };
+        var car = new VehicleType { Id = Ids.Car, Name = Vehicles.Car };
+        var scooter = new VehicleType { Id = Ids.Scooter, Name = Vehicles.Scooter };
+        var bike = new VehicleType { Id = Ids.Bike, Name = Vehicles.Bike };
         
         await _context.Set<VehicleType>().AddRangeAsync(car, scooter, bike);
 
         // Weather stations
-        var stationTallinn = new WeatherStation { Id = Ids.StationTallinn, Name = "tallinn-harku", WmoCode = 26038 };
-        var stationTartu = new WeatherStation { Id = Ids.StationTartu, Name = "tartu-tõravere", WmoCode = 26242 };
-        var stationParnu = new WeatherStation { Id = Ids.StationParnu, Name = "pärnu", WmoCode = 41803 };
+        var stationTallinn = new WeatherStation { Id = Ids.StationTallinn, Name = Stations.Tallinn, WmoCode = 26038 };
+        var stationTartu = new WeatherStation { Id = Ids.StationTartu, Name = Stations.Tartu, WmoCode = 26242 };
+        var stationParnu = new WeatherStation { Id = Ids.StationParnu, Name = Stations.Pärnu, WmoCode = 41803 };
         
         await _context.Set<WeatherStation>().AddRangeAsync(stationTallinn, stationTartu, stationParnu);
         
         // Locations
-        var tallinn = new Location { Id = Ids.LocationTallinn, Name = "tallinn", WeatherStationId = stationTallinn.Id };
-        var tartu = new Location { Id = Ids.LocationTartu, Name = "tartu", WeatherStationId = stationTartu.Id };
-        var parnu = new Location { Id = Ids.LocationParnu, Name = "pärnu", WeatherStationId = stationParnu.Id };
+        var tallinn = new Location { Id = Ids.LocationTallinn, Name = Locations.Tallinn, WeatherStationId = stationTallinn.Id };
+        var tartu = new Location { Id = Ids.LocationTartu, Name = Locations.Tartu, WeatherStationId = stationTartu.Id };
+        var parnu = new Location { Id = Ids.LocationParnu, Name = Locations.Pärnu, WeatherStationId = stationParnu.Id };
         
         await _context.Set<Location>().AddRangeAsync(tallinn, tartu, parnu);
         
         // Fee type
-        var rbf = new FeeType { Id = Ids.RegionalBaseFee, Name = "regional base fee", Code = "rbf" };
+        var rbf = new FeeType { Id = Ids.RegionalBaseFee, Name = Fees.RegionalBaseFee, Code = Fees.Rbf };
         
         await _context.Set<FeeType>().AddAsync(rbf);
         
@@ -124,7 +116,7 @@ public class DbInitializer
         await _context.Set<ConditionType>().AddRangeAsync(categoryOne, categoryTwo, categoryThree);
 
         // Weather conditions - using Guid.NewGuid() since these don't need predefined IDs
-        var conditions = new List<Condition>
+        var conditions = new List<WeatherCondition>
         {
             new() { Id = Guid.NewGuid(), Name = "glaze", ConditionTypeId = categoryThree.Id },
             new() { Id = Guid.NewGuid(), Name = "hail", ConditionTypeId = categoryThree.Id },
@@ -136,7 +128,7 @@ public class DbInitializer
             new() { Id = Guid.NewGuid(), Name = "rain", ConditionTypeId = categoryOne.Id }
         };
         
-        await _context.Set<Condition>().AddRangeAsync(conditions);
+        await _context.Set<WeatherCondition>().AddRangeAsync(conditions);
         
         // Save all changes
         await _context.SaveChangesAsync();

@@ -6,7 +6,6 @@ using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Xunit;
 
 namespace Tests.IntegrationTests
@@ -27,7 +26,6 @@ namespace Tests.IntegrationTests
                 .UseSqlite(_connection)
                 .Options;
             _dbContext = new AppDbContext(options);
-            
             _repository = new Repository(_dbContext);
             _service = new Service(_repository);
             
@@ -44,7 +42,7 @@ namespace Tests.IntegrationTests
         public async Task GetDeliveryFee_ReturnsExpectedValue(string city, string vehicleType)
         {
             // Act
-            var result = await _service.GetDeliveryFeeAsync(new DeliveryFee
+            var result = await _service.GetDeliveryFeeAsync(new Delivery
             {
                 City = city,
                 VehicleType = vehicleType
@@ -61,7 +59,7 @@ namespace Tests.IntegrationTests
         {
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => 
-                _service.GetDeliveryFeeAsync(new DeliveryFee
+                _service.GetDeliveryFeeAsync(new Delivery
                 {
                     City = city,
                     VehicleType = vehicleType
@@ -74,7 +72,7 @@ namespace Tests.IntegrationTests
         {
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => 
-                _service.GetDeliveryFeeAsync(new DeliveryFee
+                _service.GetDeliveryFeeAsync(new Delivery
                 {
                     City = city,
                     VehicleType = vehicleType
@@ -87,7 +85,7 @@ namespace Tests.IntegrationTests
         {
             // Act & Assert
             await Assert.ThrowsAsync<NotFoundException>(() => 
-                _service.GetDeliveryFeeAsync(new DeliveryFee
+                _service.GetDeliveryFeeAsync(new Delivery
                 {
                     City = city,
                     VehicleType = vehicleType
@@ -103,7 +101,7 @@ namespace Tests.IntegrationTests
             try
             {
                 // Act
-                var result = await _service.GetDeliveryFeeAsync(new DeliveryFee
+                var result = await _service.GetDeliveryFeeAsync(new Delivery
                 {
                     City = "tallinn",
                     VehicleType = "car",

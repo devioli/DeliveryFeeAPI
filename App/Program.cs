@@ -38,8 +38,6 @@ builder.Services.AddApiVersioning(options =>
 ).AddMvc();
 
 builder.Services.AddControllers();
-// Use explicit namespace to resolve ambiguity
-App.Helpers.AppHelper.AddOpenApi(builder.Services);
 
 // Register HttpClient for WeatherJob
 builder.Services.AddHttpClient();

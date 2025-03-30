@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence.Models.Fee;
 using Infrastructure.Persistence.Models.Weather.Station;
@@ -7,18 +8,13 @@ using Infrastructure.Persistence.Models.Weather.Forecast;
 
 namespace Infrastructure.Persistence;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Fee> Fees { get; set; } = null!;
     public DbSet<FeeType> FeeTypes { get; set; } = null!;
     public DbSet<Location> Locations { get; set; } = null!;
     public DbSet<VehicleType> VehicleTypes { get; set; } = null!;
-    
-    public DbSet<Condition> Conditions { get; set; } = null!;
+    public DbSet<WeatherCondition> WeatherConditions { get; set; } = null!;
     public DbSet<ConditionType> ConditionTypes { get; set; } = null!;
     public DbSet<WeatherForecast> WeatherForecasts { get; set; } = null!;
     public DbSet<WeatherStation> WeatherStations { get; set; } = null!;

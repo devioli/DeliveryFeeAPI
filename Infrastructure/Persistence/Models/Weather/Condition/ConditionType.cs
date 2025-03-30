@@ -4,5 +4,5 @@ public class ConditionType
 {
     public Guid Id { get; set; }
     public int Grade { get; set; } = 1;
-    public ICollection<Condition>? Conditions { get; set; }
+    public ICollection<WeatherCondition>? WeatherConditions { get; set; }
 }

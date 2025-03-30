@@ -1,6 +1,6 @@
 namespace Domain.Models;
 
-public class WeatherForecastDto
+public class ForecastDto
 {
     public Guid Id { get; set; }
     public double AirTemperature { get; set; }

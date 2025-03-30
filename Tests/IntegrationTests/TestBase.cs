@@ -1,3 +1,4 @@
+using Domain.Constants;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Models.Fee;
 using Infrastructure.Persistence.Models.Weather.Station;
@@ -94,7 +95,7 @@ namespace Tests.IntegrationTests
             // Seed fee types
             var feeTypes = new[]
             {
-                new FeeType { Code = "rbf", Name = "Regional Base Fee" },
+                new FeeType { Code = Constants.Fees.Rbf, Name = "Regional Base Fee" },
                 new FeeType { Code = "wief", Name = "Weather-dependent Extra Fee" },
                 new FeeType { Code = "atef", Name = "Air Temperature Extra Fee" }
             };
@@ -115,32 +116,32 @@ namespace Tests.IntegrationTests
             // Seed conditions
             var conditions = new[]
             {
-                new Condition { Name = "clear", ConditionTypeId = conditionTypes[0].Id },
-                new Condition { Name = "few clouds", ConditionTypeId = conditionTypes[0].Id },
-                new Condition { Name = "variable clouds", ConditionTypeId = conditionTypes[0].Id },
-                new Condition { Name = "cloudy with clear spells", ConditionTypeId = conditionTypes[0].Id },
-                new Condition { Name = "overcast", ConditionTypeId = conditionTypes[0].Id },
-                new Condition { Name = "light snow shower", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "moderate snow shower", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "heavy snow shower", ConditionTypeId = conditionTypes[2].Id },
-                new Condition { Name = "light shower", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "moderate shower", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "heavy shower", ConditionTypeId = conditionTypes[2].Id },
-                new Condition { Name = "light rain", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "moderate rain", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "heavy rain", ConditionTypeId = conditionTypes[2].Id },
-                new Condition { Name = "light snowfall", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "moderate snowfall", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "heavy snowfall", ConditionTypeId = conditionTypes[2].Id },
-                new Condition { Name = "snowstorm", ConditionTypeId = conditionTypes[3].Id },
-                new Condition { Name = "drifting snow", ConditionTypeId = conditionTypes[2].Id },
-                new Condition { Name = "hail", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "mist", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "fog", ConditionTypeId = conditionTypes[1].Id },
-                new Condition { Name = "thunder", ConditionTypeId = conditionTypes[2].Id },
-                new Condition { Name = "thunderstorm", ConditionTypeId = conditionTypes[3].Id }
+                new WeatherCondition { Name = "clear", ConditionTypeId = conditionTypes[0].Id },
+                new WeatherCondition { Name = "few clouds", ConditionTypeId = conditionTypes[0].Id },
+                new WeatherCondition { Name = "variable clouds", ConditionTypeId = conditionTypes[0].Id },
+                new WeatherCondition { Name = "cloudy with clear spells", ConditionTypeId = conditionTypes[0].Id },
+                new WeatherCondition { Name = "overcast", ConditionTypeId = conditionTypes[0].Id },
+                new WeatherCondition { Name = "light snow shower", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "moderate snow shower", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "heavy snow shower", ConditionTypeId = conditionTypes[2].Id },
+                new WeatherCondition { Name = "light shower", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "moderate shower", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "heavy shower", ConditionTypeId = conditionTypes[2].Id },
+                new WeatherCondition { Name = "light rain", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "moderate rain", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "heavy rain", ConditionTypeId = conditionTypes[2].Id },
+                new WeatherCondition { Name = "light snowfall", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "moderate snowfall", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "heavy snowfall", ConditionTypeId = conditionTypes[2].Id },
+                new WeatherCondition { Name = "snowstorm", ConditionTypeId = conditionTypes[3].Id },
+                new WeatherCondition { Name = "drifting snow", ConditionTypeId = conditionTypes[2].Id },
+                new WeatherCondition { Name = "hail", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "mist", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "fog", ConditionTypeId = conditionTypes[1].Id },
+                new WeatherCondition { Name = "thunder", ConditionTypeId = conditionTypes[2].Id },
+                new WeatherCondition { Name = "thunderstorm", ConditionTypeId = conditionTypes[3].Id }
             };
-            DbContext.Conditions.AddRange(conditions);
+            DbContext.WeatherConditions.AddRange(conditions);
             DbContext.SaveChanges();
 
             // Seed fees
@@ -276,7 +277,7 @@ namespace Tests.IntegrationTests
                 // Seed fee types
                 var feeTypes = new[]
                 {
-                    new FeeType { Code = "rbf", Name = "Regional Base Fee" },
+                    new FeeType { Code = Constants.Fees.Rbf, Name = "Regional Base Fee" },
                     new FeeType { Code = "wief", Name = "Weather-dependent Extra Fee" },
                     new FeeType { Code = "atef", Name = "Air Temperature Extra Fee" }
                 };
@@ -297,15 +298,15 @@ namespace Tests.IntegrationTests
                 // Seed conditions (abbreviated for brevity)
                 var conditions = new[]
                 {
-                    new Condition { Name = "clear", ConditionTypeId = conditionTypes[0].Id },
-                    new Condition { Name = "few clouds", ConditionTypeId = conditionTypes[0].Id },
-                    new Condition { Name = "variable clouds", ConditionTypeId = conditionTypes[0].Id },
-                    new Condition { Name = "light rain", ConditionTypeId = conditionTypes[1].Id },
-                    new Condition { Name = "moderate rain", ConditionTypeId = conditionTypes[1].Id },
-                    new Condition { Name = "heavy rain", ConditionTypeId = conditionTypes[2].Id },
-                    new Condition { Name = "thunderstorm", ConditionTypeId = conditionTypes[3].Id }
+                    new WeatherCondition { Name = "clear", ConditionTypeId = conditionTypes[0].Id },
+                    new WeatherCondition { Name = "few clouds", ConditionTypeId = conditionTypes[0].Id },
+                    new WeatherCondition { Name = "variable clouds", ConditionTypeId = conditionTypes[0].Id },
+                    new WeatherCondition { Name = "light rain", ConditionTypeId = conditionTypes[1].Id },
+                    new WeatherCondition { Name = "moderate rain", ConditionTypeId = conditionTypes[1].Id },
+                    new WeatherCondition { Name = "heavy rain", ConditionTypeId = conditionTypes[2].Id },
+                    new WeatherCondition { Name = "thunderstorm", ConditionTypeId = conditionTypes[3].Id }
                 };
-                db.Conditions.AddRange(conditions);
+                db.WeatherConditions.AddRange(conditions);
                 db.SaveChanges();
 
                 // Seed regional base fees (abbreviated)
