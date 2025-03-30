@@ -28,3 +28,9 @@ dotnet run --project App
 # Find information about the background jobs
 http://localhost:5218/hangfire/recurring
 ```
+
+## Work in progress
+
+- `Caching`: Introduce caching for performance improvements
+- `Authentication`: Implement authentication to REST interface
+- `Tests`: Further improve unit and integration tests
