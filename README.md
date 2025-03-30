@@ -30,6 +30,6 @@ http://localhost:5218/hangfire/recurring
 ```
 
 ## Work in progress
-
+- `Caching`: Implement HybridCache for performance
 - `Authentication`: Implement authentication to REST interface
 - `Tests`: Further improve unit and integration tests
