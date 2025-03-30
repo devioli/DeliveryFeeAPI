@@ -1,39 +1,45 @@
 using Domain.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace App.Middleware;
 
-public class CustomExceptionHandler : IExceptionHandler
+
+public class CustomExceptionHandler(IProblemDetailsService problemDetailsService) : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
     {
-        int statusCode;
-        var message = exception.Message;
-
-        var exceptionType = exception.GetType();
-
-        if (exceptionType == typeof(NotFoundException))
+        var problemDetails = exception switch
         {
-            statusCode = StatusCodes.Status404NotFound;
-        }
-        else if (exceptionType == typeof(ForbiddenVehicleTypeException))
-        {
-            statusCode = StatusCodes.Status400BadRequest;
-        }
-        else
-        {
-            statusCode = StatusCodes.Status500InternalServerError;
-            message = "An unexpected error occurred.";
-        }
+            NotFoundException nf => new ProblemDetails
+            {
+                Title = "Not Found",
+                Detail = nf.Message,
+                Status = StatusCodes.Status404NotFound,
+            },
+            ForbiddenVehicleTypeException fv => new ProblemDetails
+            {
+                Title = "Bad Request",
+                Detail = fv.Message,
+                Status = StatusCodes.Status400BadRequest,
+            },
+            _ => new ProblemDetails
+            {
+                Title = "Internal Server Error",
+                Status = StatusCodes.Status500InternalServerError,
+            }
+        };
+        
+        httpContext.Response.StatusCode = problemDetails.Status!.Value;
 
-        httpContext.Response.StatusCode = statusCode;
-        await httpContext.Response.WriteAsJsonAsync(new
+        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
-            error = message,
-            statusCode,
-            traceId = httpContext.TraceIdentifier
-        }, cancellationToken);
-
-        return true;
+            Exception = exception,
+            HttpContext = httpContext,
+            ProblemDetails = problemDetails
+        });
     }
 } 

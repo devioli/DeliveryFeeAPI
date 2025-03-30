@@ -12,11 +12,12 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Adds services for using Problem Details format
+// Add service for using Problem Details format
 builder.Services.AddProblemDetails(options =>
 {
     options.CustomizeProblemDetails = context =>
     {
+        context.ProblemDetails.Type = null;
         context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
         context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
         var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
