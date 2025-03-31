@@ -25,5 +25,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                      .Where(e => !e.IsOwned())
                      .SelectMany(e => e.GetForeignKeys()))
             relationship.DeleteBehavior = DeleteBehavior.Restrict;
+        
+        modelBuilder.Entity<VehicleType>()
+            .HasIndex(v => v.Name)
+            .IsUnique();
+        
+        modelBuilder.Entity<Location>()
+            .HasIndex(l => l.Name)
+            .IsUnique();
     }
 }
