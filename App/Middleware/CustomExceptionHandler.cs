@@ -20,9 +20,15 @@ public class CustomExceptionHandler(IProblemDetailsService problemDetailsService
                 Detail = nf.Message,
                 Status = StatusCodes.Status404NotFound,
             },
-            ForbiddenVehicleTypeException fv => new ProblemDetails
+            BadRequestException br => new ProblemDetails
             {
                 Title = "Bad Request",
+                Detail = br.Message,
+                Status = StatusCodes.Status400BadRequest,
+            },
+            ForbiddenVehicleTypeException fv => new ProblemDetails
+            {
+                Title = "Forbidden Vehicle Type",
                 Detail = fv.Message,
                 Status = StatusCodes.Status400BadRequest,
             },

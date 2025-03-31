@@ -9,13 +9,19 @@ public class Service(IRepository repository) : IService
 {
     public async Task<double> GetDeliveryFeeAsync(Delivery delivery)
     {
+        if (delivery.City is null or "") 
+            throw new BadRequestException("Provide a valid location."); 
+        
+        if (delivery.VehicleType is null or "") 
+            throw new BadRequestException("Provide a valid vehicle type."); 
+        
         var data = await repository.GetDeliveryFeeContextAsync(delivery.City, delivery.VehicleType, delivery.DateTime);
             
         if (!data.StationId.HasValue)
-            throw new NotFoundException($"Weather station for city '{delivery.City}' was not found.");
+            throw new NotFoundException($"Weather station for location '{delivery.City}' was not found.");
                 
         if (!data.VehicleId.HasValue)
-            throw new NotFoundException($"Vehicle type with name '{delivery.VehicleType}' was not found.");
+            throw new NotFoundException($"Vehicle type '{delivery.VehicleType}' was not found.");
                 
         if (!data.FeeTypeId.HasValue)
             throw new NotFoundException("Regional base fee type was not found.");
