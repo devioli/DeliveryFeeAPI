@@ -1,4 +1,4 @@
-namespace Infrastructure.Persistence.Models.Fee;
+namespace Infrastructure.Persistence.Models;
 
 public class Fee
 {

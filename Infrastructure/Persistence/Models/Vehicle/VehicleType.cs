@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Infrastructure.Persistence.Models.Vehicle;
+namespace Infrastructure.Persistence.Models;
 
 public class VehicleType
 {
@@ -10,5 +10,5 @@ public class VehicleType
     [MaxLength(50)]
     public required string Name { get; set; }
     
-    public ICollection<Fee.Fee>? Fees { get; set; }
+    public ICollection<Fee>? Fees { get; set; }
 }

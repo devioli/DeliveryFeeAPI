@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Infrastructure.Persistence.Models.Weather.Station;
+namespace Infrastructure.Persistence.Models;
 
 public class Location
 {

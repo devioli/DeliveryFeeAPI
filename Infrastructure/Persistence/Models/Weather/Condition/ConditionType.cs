@@ -1,4 +1,4 @@
-namespace Infrastructure.Persistence.Models.Weather.Condition;
+namespace Infrastructure.Persistence.Models;
 
 public class ConditionType
 {

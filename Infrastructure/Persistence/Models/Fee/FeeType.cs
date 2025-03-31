@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Infrastructure.Persistence.Models.Fee;
+namespace Infrastructure.Persistence.Models;
 
 public class FeeType
 {

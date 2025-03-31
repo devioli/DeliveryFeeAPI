@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.Models.Weather.Forecast;
+using Infrastructure.Persistence.Models;
 using Domain.Interfaces;
 using Domain.Models;
-using Infrastructure.Persistence.Models.Weather.Station;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Caching.Hybrid;
 using static Domain.Constants.Constants;
@@ -16,7 +15,7 @@ public class Repository(AppDbContext dbContext, HybridCache hybridCache) : IRepo
     {
         var baseData = await hybridCache.GetOrCreateAsync(
             $"base-{city}-{vehicleType}",
-            async cancel => await GetBaseDataAsync(city, vehicleType),
+            async token => await GetBaseDataAsync(city, vehicleType),
             tags: ["baseData"]
         );
         
@@ -47,7 +46,7 @@ public class Repository(AppDbContext dbContext, HybridCache hybridCache) : IRepo
         
         var forecast = await hybridCache.GetOrCreateAsync(
             $"weather-{baseData.StationId}-{dateTime?.ToString("yyyy-MM-dd-HH:mm") ?? "current"}",
-            async cancel => await GetWeatherForecastAsync(baseData.StationId, dateTime),
+            async token => await GetWeatherForecastAsync(baseData.StationId, dateTime),
             tags: ["weather"]
         );
         
@@ -64,7 +63,7 @@ public class Repository(AppDbContext dbContext, HybridCache hybridCache) : IRepo
         
         var grade = await hybridCache.GetOrCreateAsync(
             $"phenomenon-{forecast.Phenomenon}", 
-            async cancel => await dbContext.WeatherConditions
+            async token => await dbContext.WeatherConditions
             .Where(wc => 
                 forecast.Phenomenon != null && 
                 forecast.Phenomenon.Contains(wc.Name))
@@ -75,7 +74,7 @@ public class Repository(AppDbContext dbContext, HybridCache hybridCache) : IRepo
                 (wc, ct) => ct
             )
             .Select(x => x.Grade)
-                .FirstOrDefaultAsync(cancellationToken: cancel),
+                .FirstOrDefaultAsync(cancellationToken: token),
             tags: ["phenomenon"]
         );
             

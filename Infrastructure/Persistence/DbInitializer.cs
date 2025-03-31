@@ -1,8 +1,5 @@
 using Infrastructure.BackgroundJobs;
-using Infrastructure.Persistence.Models.Fee;
-using Infrastructure.Persistence.Models.Weather.Station;
-using Infrastructure.Persistence.Models.Vehicle;
-using Infrastructure.Persistence.Models.Weather.Condition;
+using Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using static Domain.Constants.Constants;
 

@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Infrastructure.Persistence.Models.Weather.Forecast;
 
-namespace Infrastructure.Persistence.Models.Weather.Station;
+namespace Infrastructure.Persistence.Models;
 
 public class WeatherStation
 {

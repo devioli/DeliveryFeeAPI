@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Xml.Linq;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
-using Infrastructure.Persistence.Models.Weather.Forecast;
+using Infrastructure.Persistence.Models;
 using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 
