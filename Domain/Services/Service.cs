@@ -77,22 +77,4 @@ public class Service(IRepository repository) : IService
                 return 0;
         }
     }
-
-    // public VehicleType VehicleTypeStringToEnum(string vehicle)
-    // {
-    //     return vehicle switch
-    //     {
-    //         "bike" => VehicleType.Bike,
-    //         "scooter" => VehicleType.Scooter,
-    //         "car" => VehicleType.Car,
-    //         _ => throw new Exception($"Mapping to VehicleType enum failed. Unknown vehicle type: {vehicle}")
-    //     };
-    // }
-    //
-    // public enum VehicleType 
-    // {
-    //     Bike,
-    //     Scooter,
-    //     Car
-    // }
 }
