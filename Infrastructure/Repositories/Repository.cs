@@ -5,22 +5,23 @@ using Domain.Interfaces;
 using Domain.Models;
 using Infrastructure.Persistence.Models.Weather.Station;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Caching.Hybrid;
 using static Domain.Constants.Constants;
 
 namespace Infrastructure.Repositories;
 
-public class Repository(AppDbContext dbContext) : IRepository
+public class Repository(AppDbContext dbContext, HybridCache hybridCache) : IRepository
 {
-    /// <summary>
-    /// Gets all the necessary data for calculating delivery fee in a single query
-    /// </summary>
     public async Task<DeliveryFeeContext> GetDeliveryFeeContextAsync(string city, string vehicleType, DateTime? dateTime)
     {
-        var baseData = await GetBaseDataAsync(city, vehicleType);
+        var baseData = await hybridCache.GetOrCreateAsync(
+            $"base-{city}-{vehicleType}",
+            async cancel => await GetBaseDataAsync(city, vehicleType),
+            tags: ["baseData"]
+        );
         
         if (baseData is null)
         {
-            // If data is missing, do targeted queries to identify what's missing
             var stationQuery = await dbContext.Locations
                 .Where(l => l.Name == city)
                 .Select(l => l.WeatherStationId)
@@ -44,11 +45,27 @@ public class Repository(AppDbContext dbContext) : IRepository
             };
         }
         
-        var forecast = await GetWeatherForecastAsync(baseData.StationId, dateTime);
+        var forecast = await hybridCache.GetOrCreateAsync(
+            $"weather-{baseData.StationId}-{dateTime?.ToString("yyyy-MM-dd-HH:mm") ?? "current"}",
+            async cancel => await GetWeatherForecastAsync(baseData.StationId, dateTime),
+            tags: ["weather"]
+        );
         
-        var conditionTypeGrade = await dbContext.WeatherConditions
+        if (forecast?.Phenomenon is null)
+        {
+            return new DeliveryFeeContext
+            {
+                StationId = baseData.StationId,
+                VehicleId = baseData.VehicleId,
+                FeeTypeId = baseData.FeeTypeId,
+                RegionalBaseFee = baseData.RegionalBaseFee
+            };
+        }
+        
+        var grade = await hybridCache.GetOrCreateAsync(
+            $"phenomenon-{forecast.Phenomenon}", 
+            async cancel => await dbContext.WeatherConditions
             .Where(wc => 
-                forecast != null && 
                 forecast.Phenomenon != null && 
                 forecast.Phenomenon.Contains(wc.Name))
             .Join(
@@ -58,7 +75,9 @@ public class Repository(AppDbContext dbContext) : IRepository
                 (wc, ct) => ct
             )
             .Select(x => x.Grade)
-            .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken: cancel),
+            tags: ["phenomenon"]
+        );
             
         return new DeliveryFeeContext
         {
@@ -66,8 +85,8 @@ public class Repository(AppDbContext dbContext) : IRepository
             VehicleId = baseData.VehicleId,
             FeeTypeId = baseData.FeeTypeId,
             RegionalBaseFee = baseData.RegionalBaseFee,
-            WeatherConditionGrade = conditionTypeGrade,
-            WeatherForecast = forecast != null ? MapToForecastDto(forecast) : null,
+            WeatherConditionGrade = grade,
+            WeatherForecast = MapToForecastDto(forecast),
         };
     }  
     

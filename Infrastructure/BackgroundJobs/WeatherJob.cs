@@ -1,18 +1,21 @@
+using System.Globalization;
 using System.Xml.Linq;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Models.Weather.Forecast;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.BackgroundJobs;
 
-public class WeatherJob (AppDbContext dbContext, IRepository repository, IConfiguration configuration)
+public class WeatherJob (AppDbContext dbContext, IRepository repository, IConfiguration configuration, HybridCache hybridCache)
 {
     public async Task GetWeatherDataAsync()
     {
         var xml = await FetchXmlDataAsync();
         await XmlToWeatherForecastMapperAsync(xml);
         await dbContext.SaveChangesAsync();
+        await hybridCache.RemoveAsync("weather");
     }
 
     private async Task<string> FetchXmlDataAsync()
@@ -43,12 +46,12 @@ public class WeatherJob (AppDbContext dbContext, IRepository repository, IConfig
             {
                 var stationName = s.Element("name")?.Value.ToLower() ?? "";
                 var matchingStation = stations.First(x => x.Name.Equals(stationName, StringComparison.CurrentCultureIgnoreCase));
-                    
+                
                 return new WeatherForecast
                 {
                     WeatherStationId = matchingStation.Id,
-                    AirTemperature = double.Parse(s.Element("airtemperature")?.Value ?? "0"),
-                    WindSpeed = double.Parse(s.Element("windspeed")?.Value ?? "0"),
+                    AirTemperature = double.Parse(s.Element("airtemperature")?.Value ?? "0", CultureInfo.InvariantCulture),
+                    WindSpeed = double.Parse(s.Element("windspeed")?.Value ?? "0", CultureInfo.InvariantCulture),
                     Phenomenon = s.Element("phenomenon")?.Value.ToLower() ?? "",
                     DateTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(doc.Root?.Attribute("timestamp")?.Value ?? "0")).DateTime
                 };

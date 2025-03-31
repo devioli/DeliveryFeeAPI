@@ -9,6 +9,7 @@ using Infrastructure.BackgroundJobs;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,18 @@ builder.Services.AddProblemDetails(options =>
         context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
         var activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
         context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+    };
+});
+
+// Hybrid Cache
+builder.Services.AddHybridCache(options =>
+{
+    options.MaximumPayloadBytes = 1024 * 1024;
+    options.MaximumKeyLength = 1024;
+    options.DefaultEntryOptions = new HybridCacheEntryOptions
+    {
+        Expiration = TimeSpan.FromMinutes(5),
+        LocalCacheExpiration = TimeSpan.FromMinutes(5)
     };
 });
 
