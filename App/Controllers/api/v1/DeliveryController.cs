@@ -22,7 +22,7 @@ public class DeliveryController(IService service) : ControllerBase
     /// <param name="vehicleType">The type of vehicle used for delivery (car, scooter, bike; case-insensitive)</param>
     /// <param name="timestamp">Optional Unix timestamp to calculate fees for a specific point in time</param>
     [HttpGet("{city}/{vehicleType}")]
-    [ProducesResponseType(typeof(DeliveryDTOResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DeliveryDtoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDeliveryFeeAsync(string city, string vehicleType, [FromQuery] long? timestamp)
@@ -35,10 +35,10 @@ public class DeliveryController(IService service) : ControllerBase
     /// </summary>
     /// <param name="dto">The DTO containing city, vehicle type and optional timestamp</param>
     [HttpGet]
-    [ProducesResponseType(typeof(DeliveryDTOResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DeliveryDtoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetDeliveryFeeFromQueryAsync([FromQuery] DeliveryDTO dto)
+    public async Task<IActionResult> GetDeliveryFeeFromQueryAsync([FromQuery] DeliveryDto dto)
     {
         return await CalculateDeliveryFee(dto.City, dto.VehicleType, dto.Timestamp);
     }
@@ -52,6 +52,6 @@ public class DeliveryController(IService service) : ControllerBase
                 VehicleType = vehicleType.ToLower(),
                 DateTime = timestamp.HasValue ? DateTimeOffset.FromUnixTimeSeconds(timestamp.Value).DateTime : null
             });
-        return Ok(new DeliveryDTOResponse { Fee = result });
+        return Ok(new DeliveryDtoResponse { Fee = result });
     }
 } 

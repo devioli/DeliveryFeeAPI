@@ -29,9 +29,9 @@ public class DeliveryControllerTests(CustomWebApplicationFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         
-        var result = await response.Content.ReadFromJsonAsync<DeliveryDTOResponse>();
+        var result = await response.Content.ReadFromJsonAsync<DeliveryDtoResponse>();
         result.Should().NotBeNull();
-        result.Should().BeOfType<DeliveryDTOResponse>();
+        result.Should().BeOfType<DeliveryDtoResponse>();
         result!.Fee.Should().BeGreaterThan(0);
     }
 
@@ -49,9 +49,9 @@ public class DeliveryControllerTests(CustomWebApplicationFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         
-        var result = await response.Content.ReadFromJsonAsync<DeliveryDTOResponse>();
+        var result = await response.Content.ReadFromJsonAsync<DeliveryDtoResponse>();
         result.Should().NotBeNull();
-        result.Should().BeOfType<DeliveryDTOResponse>();
+        result.Should().BeOfType<DeliveryDtoResponse>();
         result!.Fee.Should().BeGreaterThan(0);
     }
 
@@ -110,9 +110,9 @@ public class DeliveryControllerTests(CustomWebApplicationFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         
-        var result = await response.Content.ReadFromJsonAsync<DeliveryDTOResponse>();
+        var result = await response.Content.ReadFromJsonAsync<DeliveryDtoResponse>();
         result.Should().NotBeNull();
-        result.Should().BeOfType<DeliveryDTOResponse>();
+        result.Should().BeOfType<DeliveryDtoResponse>();
         result!.Fee.Should().BeGreaterThan(0);
     }
 
@@ -130,9 +130,9 @@ public class DeliveryControllerTests(CustomWebApplicationFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
         
-        var result = await response.Content.ReadFromJsonAsync<DeliveryDTOResponse>();
+        var result = await response.Content.ReadFromJsonAsync<DeliveryDtoResponse>();
         result.Should().NotBeNull();
-        result.Should().BeOfType<DeliveryDTOResponse>();
+        result.Should().BeOfType<DeliveryDtoResponse>();
         result!.Fee.Should().BeGreaterThan(0);
     }
 
@@ -219,7 +219,7 @@ public class DeliveryControllerTests(CustomWebApplicationFactory factory)
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
-        var result = await response.Content.ReadFromJsonAsync<DeliveryDTOResponse>();
+        var result = await response.Content.ReadFromJsonAsync<DeliveryDtoResponse>();
         result.Should().NotBeNull();
         result!.Fee.Should().BeGreaterThan(0);
     }
@@ -228,9 +228,9 @@ public class DeliveryControllerTests(CustomWebApplicationFactory factory)
     
     #region Test Helpers
 
-    private DeliveryDTO CreateDeliveryDto(string? city = Locations.Tallinn, string? vehicleType = Vehicles.Car, long? timestamp = null)
+    private DeliveryDto CreateDeliveryDto(string? city = Locations.Tallinn, string? vehicleType = Vehicles.Car, long? timestamp = null)
     {
-        return new DeliveryDTO
+        return new DeliveryDto
         {
             City = city!,
             VehicleType = vehicleType!,

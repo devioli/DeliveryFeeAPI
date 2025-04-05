@@ -5,7 +5,7 @@ namespace App.DTOs.v1;
 /// <summary>
 /// Data transfer object for delivery fee calculation request parameters.
 /// </summary>
-public class DeliveryDTO
+public class DeliveryDto
 {
     /// <summary>
     /// The city where the delivery takes place.

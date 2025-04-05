@@ -3,7 +3,7 @@ namespace App.DTOs.v1;
 /// <summary>
 /// Data transfer object for the delivery fee calculation response.
 /// </summary>
-public class DeliveryDTOResponse
+public class DeliveryDtoResponse
 {
     /// <summary>
     /// The calculated delivery fee in euros.
