@@ -15,6 +15,15 @@ public class Service(IRepository repository) : IService
         if (delivery.VehicleType is null or "") 
             throw new BadRequestException("Provide a valid vehicle type."); 
         
+        if (delivery.DateTime.HasValue)
+        {
+            if (delivery.DateTime.Value > DateTime.Now)
+                throw new BadRequestException("Delivery date cannot be in the future.");
+                
+            if (delivery.DateTime.Value == DateTime.MinValue)
+                throw new BadRequestException($"Invalid date: {delivery.DateTime.Value}");
+        }
+        
         var data = await repository.GetDeliveryFeeContextAsync(delivery.City, delivery.VehicleType, delivery.DateTime);
             
         if (!data.StationId.HasValue)
