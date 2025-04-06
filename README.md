@@ -22,20 +22,18 @@ dotnet ef database update --project Infrastructure --startup-project App --conte
 dotnet run --project App
 ``` 
 
-## Accessing Hangfire Dashboard
+## Hangfire Dashboard
 
 ```bash
-# Find information about the background jobs
-http://localhost:5218/hangfire/recurring
+http://localhost:5218/hangfire
 ```
 
-## Accessing Swagger UI
+## Swagger UI
 
 ```bash
-http://localhost:5218/
+http://localhost:5218/swagger
 ```
 
 ## Work in progress
-- `API Versioning`: Not working after moving from Controller based API to Minimal API
-- `Authentication`: Implement authentication to REST interface
+- `Authentication`: Implement authentication to REST interface, Hangfire Dashboard
 - `Logging`

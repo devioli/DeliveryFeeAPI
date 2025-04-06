@@ -40,6 +40,7 @@ builder.Services.AddHybridCache(options =>
     };
 });
 
+// Add custom exception handler
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 // Add services to the container.
@@ -69,9 +70,9 @@ builder.Services.AddSwaggerGen(c =>
 // Register HttpClient for WeatherJob
 builder.Services.AddHttpClient();
 
+// Add Hangfire services.
 var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection");
 
-// Add Hangfire services.
 builder.Services.AddHangfire(configuration => configuration
     .UseSimpleAssemblyNameTypeSerializer()
     .UseRecommendedSerializerSettings()
@@ -99,8 +100,6 @@ using (var scope = app.Services.CreateScope())
     await initializer.InitializeAsync();
 }
 
-// Configure the HTTP request pipeline.
-// Exception handler should be registered early in the pipeline
 app.UseExceptionHandler();
 
 // HTTPS redirection should come early in the pipeline

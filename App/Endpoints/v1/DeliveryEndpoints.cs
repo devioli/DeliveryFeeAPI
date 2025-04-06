@@ -12,30 +12,29 @@ public static class DeliveryEndpoints
     /// <summary>
     /// Maps all delivery-related endpoints to the application's route builder.
     /// </summary>
-    /// <param name="routes">The endpoint route builder to add routes to.</param>
-    public static void MapDeliveryEndpoints(this IEndpointRouteBuilder routes)
+    /// <param name="routeBuilder">The endpoint route builder to add routes to.</param>
+    public static void MapDeliveryEndpoints(this IEndpointRouteBuilder routeBuilder)
     {
-        var group = routes
-            .MapGroup("api/v1/delivery")
+        var routeGroup = routeBuilder.MapGroup("delivery")
             .WithTags("Delivery")
-            .WithDescription("Calculates delivery fee for food couriers based on regional base fee, vehicle type and weather conditions.")
+            .WithDescription("Calculates delivery fee based on location, vehicle type and weather conditions.")
             .WithOpenApi()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem()
+            .MapToApiVersion(1);
 
-        group.MapGet("{city}/{vehicleType}",
-                async (string city, string vehicleType, long? timestamp, IService service) =>
-                {
-                    var delivery = CreateDeliveryRequest(city, vehicleType, timestamp);
-                    var result = await service.GetDeliveryFeeAsync(delivery);
-                    return TypedResults.Ok(new DeliveryDtoResponse {Fee = result});
-                })
+        routeGroup.MapGet("{city}/{vehicleType}", async (string city, string vehicleType, long? timestamp, IService service) =>
+            {
+                var delivery = CreateDeliveryRequest(city, vehicleType, timestamp);
+                var result = await service.GetDeliveryFeeAsync(delivery);
+                return TypedResults.Ok(new DeliveryDtoResponse {Fee = result});
+            })
             .WithName("GetDeliveryFee")
             .Produces<DeliveryDtoResponse>();
 
-        group.MapGet("", async ([AsParameters] DeliveryDto dto, IService service) =>
+        routeGroup.MapGet("", async ([AsParameters] DeliveryDto dto, IService service) =>
             {
                 var delivery = CreateDeliveryRequest(dto.City, dto.VehicleType, dto.Timestamp);
                 var result = await service.GetDeliveryFeeAsync(delivery);
