@@ -1,6 +1,6 @@
 # Delivery Fee API
 
-A .NET API for calculating delivery fees based on weather conditions.
+.NET Minimal API for calculating delivery fee based on location, vehicle type and weather conditions.
 
 ## Project Structure
 
