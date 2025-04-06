@@ -10,13 +10,17 @@ public class Service(IRepository repository) : IService
     public async Task<double> GetDeliveryFeeAsync(Delivery delivery)
     {
         ValidateDelivery(delivery);
-        var data = await repository.GetDeliveryFeeContextAsync(delivery.City, delivery.VehicleType, delivery.DateTime);
-        ValidateDeliveryFeeContext(data, delivery);
-
-        var airTemperatureFee = GetAirTemperatureFee(data.WeatherForecast!.AirTemperature, delivery.VehicleType);
-        var windSpeedFee = GetWindSpeedFee(data.WeatherForecast.WindSpeed, delivery.VehicleType);
-        var weatherConditionFee = GetConditionFee(data.WeatherConditionGrade, delivery.VehicleType);
-        return data.RegionalBaseFee + airTemperatureFee + windSpeedFee + weatherConditionFee;
+        var context = await repository.GetDeliveryFeeContextAsync(delivery.City, delivery.VehicleType, delivery.DateTime);
+        ValidateDeliveryFeeContext(context, delivery);
+        return CalculateTotalFee(delivery, context);
+    }
+    
+    public double CalculateTotalFee(Delivery delivery, DeliveryFeeContext context)
+    {
+        var airTemperatureFee = GetAirTemperatureFee(context.WeatherForecast!.AirTemperature, delivery.VehicleType);
+        var windSpeedFee = GetWindSpeedFee(context.WeatherForecast.WindSpeed, delivery.VehicleType);
+        var weatherConditionFee = GetConditionFee(context.WeatherConditionGrade, delivery.VehicleType);
+        return context.RegionalBaseFee + airTemperatureFee + windSpeedFee + weatherConditionFee;
     }
     
     public double GetAirTemperatureFee(double temperature, string vehicle)
