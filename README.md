@@ -29,5 +29,13 @@ dotnet run --project App
 http://localhost:5218/hangfire/recurring
 ```
 
+## Accessing Swagger UI
+
+```bash
+http://localhost:5218/
+```
+
 ## Work in progress
+- `API Versioning`: Not working after moving from Controller based API to Minimal API
 - `Authentication`: Implement authentication to REST interface
+- `Logging`

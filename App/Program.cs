@@ -10,6 +10,8 @@ using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.OpenApi.Models;
+using App.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +44,7 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 // Add services to the container.
 
+// Add API versioning support
 builder.Services.AddApiVersioning(options =>
     {
         options.DefaultApiVersion = new ApiVersion(1,0);
@@ -49,9 +52,19 @@ builder.Services.AddApiVersioning(options =>
         options.ReportApiVersions = true;
         options.ApiVersionReader = new UrlSegmentApiVersionReader();
     }
-).AddMvc();
+);
 
-builder.Services.AddControllers();
+// Enable OpenAPI/Swagger with Swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Delivery Fee API", 
+        Version = "v1",
+        Description = "API for calculating delivery fees based on weather conditions."
+    });
+});
 
 // Register HttpClient for WeatherJob
 builder.Services.AddHttpClient();
@@ -66,9 +79,6 @@ builder.Services.AddHangfire(configuration => configuration
 
 // Add the processing server as IHostedService
 builder.Services.AddHangfireServer();
-
-// Add framework services.
-builder.Services.AddMvc();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -90,23 +100,30 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
+// Exception handler should be registered early in the pipeline
+app.UseExceptionHandler();
+
+// HTTPS redirection should come early in the pipeline
+app.UseHttpsRedirection();
+
+// Enable Swagger for all environments
+app.UseSwagger();
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwaggerUI(c => 
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Delivery Fee API v1");
+    });
 }
 
 app.UseHangfireDashboard();
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
 // Returns the Problem Details response for (empty) non-successful responses
 app.UseStatusCodePages();
 
-app.UseExceptionHandler();
+// Map all API endpoints
+app.MapEndpoints();
 
 app.Services.GetRequiredService<IRecurringJobManager>()
     .AddOrUpdate<WeatherJob>(

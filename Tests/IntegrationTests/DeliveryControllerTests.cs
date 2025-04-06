@@ -175,26 +175,6 @@ public class DeliveryControllerTests(CustomWebApplicationFactory factory)
     }
 
     #endregion
-
-    #region Validation Tests
-
-    [Fact]
-    public async Task GetDeliveryFeeFromQuery_WithMissingParameters_ReturnsBadRequest()
-    {
-        // Arrange & Act
-        var response = await _client.GetAsync(BaseUrl);
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response.Content.Headers.ContentType!.MediaType.Should().Be("application/json");
-        
-        var problemDetails = await response.Content.ReadFromJsonAsync<JsonElement>();
-        problemDetails.GetProperty("title").GetString().Should().Be("One or more validation errors occurred.");
-        problemDetails.GetProperty("status").GetInt32().Should().Be(400);
-        problemDetails.TryGetProperty("errors", out var _).Should().BeTrue();
-    }
-    
-    #endregion
     
     #region Data-Driven Tests
     

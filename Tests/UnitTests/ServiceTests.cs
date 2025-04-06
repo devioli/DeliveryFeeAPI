@@ -265,7 +265,7 @@ public class ServiceTests
     public void GetConditionFee_ReturnsCorrectFee(int grade, string vehicleType, double expectedFee)
     {
         // Act
-        var result = _service.GetConditionFee(grade, vehicleType);
+        var result = _service.GetPhenomenonFee(grade, vehicleType);
         
         // Assert
         Assert.Equal(expectedFee, result);
@@ -278,7 +278,7 @@ public class ServiceTests
     {
         // Act & Assert
         var exception = Assert.Throws<ForbiddenVehicleTypeException>(() => 
-            _service.GetConditionFee(3, vehicleType));
+            _service.GetPhenomenonFee(3, vehicleType));
             
         Assert.Equal("Usage of selected vehicle type is forbidden.", exception.Message);
     }
@@ -287,7 +287,7 @@ public class ServiceTests
     public void GetConditionFee_ForCarWithSevereConditions_ReturnsZero()
     {
         // Act
-        var result = _service.GetConditionFee(3, Vehicles.Car);
+        var result = _service.GetPhenomenonFee(3, Vehicles.Car);
         
         // Assert
         Assert.Equal(0, result);

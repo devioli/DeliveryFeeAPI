@@ -11,14 +11,14 @@ public class DeliveryDto
     /// The city where the delivery takes place.
     /// </summary>
     /// <example>tallinn</example>
-    [Required(ErrorMessage = "City is required")]
+    [Required(ErrorMessage = "City is required.")]
     public required string City { get; set; }
 
     /// <summary>
     /// The type of vehicle used for delivery (car, scooter, bike).
     /// </summary>
     /// <example>car</example>
-    [Required(ErrorMessage = "Vehicle type is required")]
+    [Required(ErrorMessage = "Vehicle type is required.")]
     public required string VehicleType { get; set; }
 
     /// <summary>

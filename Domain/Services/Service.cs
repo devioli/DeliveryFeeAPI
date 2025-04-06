@@ -19,8 +19,8 @@ public class Service(IRepository repository) : IService
     {
         var airTemperatureFee = GetAirTemperatureFee(context.WeatherForecast!.AirTemperature, delivery.VehicleType);
         var windSpeedFee = GetWindSpeedFee(context.WeatherForecast.WindSpeed, delivery.VehicleType);
-        var weatherConditionFee = GetConditionFee(context.WeatherConditionGrade, delivery.VehicleType);
-        return context.RegionalBaseFee + airTemperatureFee + windSpeedFee + weatherConditionFee;
+        var phenomenonFee = GetPhenomenonFee(context.WeatherConditionGrade, delivery.VehicleType);
+        return context.RegionalBaseFee + airTemperatureFee + windSpeedFee + phenomenonFee;
     }
     
     public double GetAirTemperatureFee(double temperature, string vehicle)
@@ -45,7 +45,7 @@ public class Service(IRepository repository) : IService
         };
     }
     
-    public double GetConditionFee(int grade, string vehicle)
+    public double GetPhenomenonFee(int grade, string vehicle)
     {
         if (vehicle is not (Vehicles.Bike or Vehicles.Scooter)) return 0;
         switch (grade)
